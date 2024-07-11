@@ -19,7 +19,7 @@ class PredictItem(BaseModel):
 
 @app.get("/")
 def info():
-    return {"info": "timeplus chat bot server"}
+    return {"info": "DDoS detection server"}
 
 
 @app.post("/is_ddos")
