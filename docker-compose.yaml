@@ -1,0 +1,22 @@
+services:
+  timeplus:
+    image: timeplus/timeplus-enterprise:2.3.2
+    container_name: timeplus-server
+    environment:
+    - ENABLE_AUTHENTICATION=false
+    
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data/:/timeplus/data/
+      - ./logs/:/timeplus/logs/
+
+  ddos:
+    image: ddos_detection:latest
+    container_name: ddos-server
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+
+    ports:
+    - "5001:5001"
+  

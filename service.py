@@ -26,7 +26,7 @@ def info():
 
 def is_ddos(item: PredictItem):
     results = []
-    for (bwd_packet_length_min, bwd_packet_length_std, avg_packet_size, flow_duration, flow_iat_std) in zip(item.bwd_packet_length_std, item.avg_packet_size, item.flow_duration, item.flow_iat_std):
+    for (bwd_packet_length_min, bwd_packet_length_std, avg_packet_size, flow_duration, flow_iat_std) in zip(item.bwd_packet_length_min, item.bwd_packet_length_std, item.avg_packet_size, item.flow_duration, item.flow_iat_std):
         results.append(bot.is_ddos(bwd_packet_length_min, bwd_packet_length_std, avg_packet_size, flow_duration, flow_iat_std))
 
     return {"result": results}
