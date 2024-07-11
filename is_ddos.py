@@ -8,7 +8,7 @@ import re
 @retry(tries=3, delay=2)
 def is_ddos(bwd_packet_length_min, bwd_packet_length_std, avg_packet_size, flow_duration, flow_iat_std):
 
-    friday = pd.read_csv('ddos\model\Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv')
+    friday = pd.read_csv('Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv')
     friday.columns = [column.strip() for column in friday.columns]
     train = friday[['Bwd Packet Length Min', 'Bwd Packet Length Std', 'Average Packet Size', 'Flow Duration', 'Flow IAT Std', 'Label']]
     train = train.sample(10)
@@ -51,3 +51,8 @@ class Detector:
 
     def is_ddos(self, bwd_packet_length_min, bwd_packet_length_std, avg_packet_size, flow_duration, flow_iat_std):
         return is_ddos(bwd_packet_length_min, bwd_packet_length_std, avg_packet_size, flow_duration, flow_iat_std)
+    
+
+if __name__ == '__main__':
+    detector = Detector()
+    print(detector.is_ddos(6, 0, 7, 7000000, 3500000))
