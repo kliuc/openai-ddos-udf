@@ -41,7 +41,10 @@ def is_ddos(bwd_packet_length_min, bwd_packet_length_std, avg_packet_size, flow_
         ]
     )
 
-    label = re.search(r'(?<=\@{3}).+(?=\@{3})', completion.choices[0].message.content).group()
+    output = completion.choices[0].message.content
+    print(output)
+    
+    label = re.search(r'(?<=\@{3}).+(?=\@{3})', output).group()
     return label == 'DDoS'
 
 
