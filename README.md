@@ -1,5 +1,10 @@
 # openai ddos udf
  
+First create a .env file with your OpenAI API key:
+```
+OPENAI_API_KEY=key here
+```
+
 To run:
 ```docker build -t ddos_detection .```
 then
