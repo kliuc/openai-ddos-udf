@@ -8,12 +8,14 @@ import re
 @retry(tries=3, delay=2)
 def is_ddos(bwd_packet_length_min, bwd_packet_length_std, avg_packet_size, flow_duration, flow_iat_std):
 
+    # read training data and select samples/features
     friday = pd.read_csv('Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv')
     friday.columns = [column.strip() for column in friday.columns]
     train = friday[['Bwd Packet Length Min', 'Bwd Packet Length Std', 'Average Packet Size', 'Flow Duration', 'Flow IAT Std', 'Label']]
     train = train.sample(10)
-    test = pd.DataFrame([bwd_packet_length_min, bwd_packet_length_std, avg_packet_size, flow_duration, flow_iat_std])
+    test = pd.DataFrame([[bwd_packet_length_min, bwd_packet_length_std, avg_packet_size, flow_duration, flow_iat_std]])
 
+    # helper function to format data into string format useable as a prompt
     def promptify(df):
         column_names = ['Bwd Packet Length Min', 'Bwd Packet Length Std', 'Average Packet Size', 'Flow Duration', 'Time Between Packets Std', 'Label']
         formatted_rows = []
@@ -30,6 +32,7 @@ def is_ddos(bwd_packet_length_min, bwd_packet_length_std, avg_packet_size, flow_
 
         return '\n'.join(interleaved_rows)
     
+    # assemble the prompt and call OpenAI API to get completion output
     system_prompt = '''You will be provided with a sample of network traffic data that is split between training data and a single testing data (separated by '###'). Each row of data is separated by a newline, and each row has features that are separated by a pipe symbol ('|'). Using information from the training data, predict the best label (BENIGN or DDoS) for the testing data. First explain your reasoning for the selected label. Then indicate the predicted label with '@@@' on each side.'''
     user_prompt = promptify(train) + '\n###\n' + promptify(test)
 
@@ -44,9 +47,9 @@ def is_ddos(bwd_packet_length_min, bwd_packet_length_std, avg_packet_size, flow_
     output = completion.choices[0].message.content
     print(output)
 
-    label = re.search(r'(?<=\@{3}).+(?=\@{3})', output).group().strip()
-    print(label)
-    return label == 'DDoS'
+    # extract and return the predicted label from the completion output
+    label = re.search(r'(?<=\@{3}).+(?=\@{3})', output).group().strip().lower()
+    return label == 'ddos'
 
 
 class Detector:
