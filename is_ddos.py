@@ -7,7 +7,17 @@ import re
 
 @retry(tries=3, delay=2)
 def is_ddos(bwd_packet_length_min, bwd_packet_length_std, avg_packet_size, flow_duration, flow_iat_std):
+    """Determine if network traffic is DDoS traffic.
 
+    Args:
+        bwd_packet_length_min (int) -- minimum backward packet length in bytes
+        bwd_packet_length_std (float) -- standard devation of backward packet length
+        avg_packet_size (float) -- average packet size
+        flow_duration (float) -- network flow duration in seconds
+        flow_iat_std (float) -- standard deviation of duration of time between packets
+    Returns:
+        bool -- whether the traffic is or is not DDoS
+    """
     # read training data and select samples/features
     friday = pd.read_csv('Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv')
     friday.columns = [column.strip() for column in friday.columns]
@@ -53,10 +63,14 @@ def is_ddos(bwd_packet_length_min, bwd_packet_length_std, avg_packet_size, flow_
 
 
 class Detector:
+    """Object wrapper for `is_ddos` function."""
+    
     def __init__(self):
+        """Initialize the detector with OpenAI API key."""
         openai.api_key = os.getenv("OPENAI_API_KEY")
 
     def is_ddos(self, bwd_packet_length_min, bwd_packet_length_std, avg_packet_size, flow_duration, flow_iat_std):
+        """Wrapper for `is_ddos`."""
         return is_ddos(bwd_packet_length_min, bwd_packet_length_std, avg_packet_size, flow_duration, flow_iat_std)
     
 
